@@ -1,2 +1,3 @@
 node_modules
 allenamento_server.js
+.env
