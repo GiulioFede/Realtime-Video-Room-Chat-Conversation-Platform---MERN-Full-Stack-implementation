@@ -1,7 +1,12 @@
 import React from "react"
+import AuthBox from "../components/BoxAuth";
 
 const RegisterPage = () => {
-    return <div>RegisterPage</div>
+    return (
+        <AuthBox>
+            RegisterPage
+        </AuthBox>
+    )
 };
 
 export default RegisterPage;
