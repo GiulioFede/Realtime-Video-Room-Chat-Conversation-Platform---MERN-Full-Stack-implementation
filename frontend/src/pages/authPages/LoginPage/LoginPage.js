@@ -1,10 +1,12 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import InputField from "../../components/InputField";
 import PrimaryButton from "../../components/PrimaryButton";
 import RedirectInfo from "../../components/RedirectInfo";
 import AuthBox from "../components/BoxAuth";
 import BoxHeaderAuth from "../components/BoxHeaderAuth";
 import {useNavigate} from "react-router-dom";
+import { Tooltip } from "@mui/material";
+import { validateLoginForm } from "./utils/validator";
 
 const LoginPage = () => {
 
@@ -16,9 +18,16 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
 
     const [isFormValid, setIsFormValid] = useState(false);
+
+    useEffect(()=>{
+
+        //quando cambia l'email e/o la password inserita li validiamo
+        setIsFormValid( validateLoginForm({email, password}));
+
+    },[email, password, setIsFormValid])
     
     const handleLogInClick = () => {
-        console.log("log in");
+        console.log("log in" + isFormValid);
     }
 
     const handlePushToRegisterPage = () => {
@@ -47,13 +56,21 @@ const LoginPage = () => {
                         placeholder= "inserisci la tua password" />
 
             {/*BOTTONE PER LOGGARSI*/}
-            <PrimaryButton
-                label="Log in"
-                additionalStyles = {{marginTop:"30px"}}
-                disabled={!isFormValid}
-                onClick={handleLogInClick}
-            />
+            {/*Toolpit serve per suggerire, al mouse over, delle info. Ha bisogno che l'elemento sia html (per questo uso un div) */}
+            <Tooltip 
+                title = {!isFormValid ? "Inserisci email e password corrette": ""}
+            >
+                <div>
+                    <PrimaryButton
+                        label="Log in"
+                        additionalStyles = {{marginTop:"30px"}}
+                        disabled={!isFormValid}
+                        onClick={handleLogInClick}
+                    />
+                </div>
+            </Tooltip>
 
+            {/*TASTO PER ESSERE REDIRETTI NELLA PAGINA DI REGISTRAZIONE*/}
             <RedirectInfo  
                 text="Sei nuovo?"
                 redirectText=" Crea un account"
