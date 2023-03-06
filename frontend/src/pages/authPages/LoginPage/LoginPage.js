@@ -58,7 +58,7 @@ const LoginPage = () => {
             {/*BOTTONE PER LOGGARSI*/}
             {/*Toolpit serve per suggerire, al mouse over, delle info. Ha bisogno che l'elemento sia html (per questo uso un div) */}
             <Tooltip 
-                title = {!isFormValid ? "Inserisci email e password corrette": ""}
+                title = {!isFormValid ? "Inserisci email e password corrette": "Clicca per fare il log in!"}
             >
                 <div>
                     <PrimaryButton
