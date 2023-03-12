@@ -9,6 +9,7 @@ import { Tooltip } from "@mui/material";
 import { validateLoginForm } from "./utils/validator";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUserAPI } from "../userDetailsSlice";
+import { open } from "../../components/slices/AlertBarSlice";
 
 
 const LoginPage = () => {
@@ -25,6 +26,7 @@ const LoginPage = () => {
     const [isFormValid, setIsFormValid] = useState(false);
 
     const status = useSelector(state => state.userDetails.status);
+    const error = useSelector(state => state.userDetails.error);
 
     useEffect(()=>{
 
@@ -34,10 +36,16 @@ const LoginPage = () => {
     },[email, password, setIsFormValid])
 
     useEffect( ()=>{
-        console.log("Lo stato è cambiato: ", status);
+        console.log("Lo stato è cambiato: " +status + " con errore "+error);
+        
         if (status=="succeeded"){
-                //redirect alla pagina di dashboard
-                navigate('/dashboard');
+            //redirect alla pagina di dashboard
+            navigate('/dashboard');
+        }
+
+        if (status=="failed"){
+            console.log("apri box di alert");
+            dispatch(open(error));
         }
 
     },[status])

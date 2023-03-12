@@ -9,9 +9,11 @@ import {
 import LoginPage from './pages/authPages/LoginPage/LoginPage';
 import RegisterPage from './pages/authPages/RegisterPage/RegisterPage';
 import Dashboard from './pages/Dashboard/Dashboard';
+import AlertBar from './pages/components/AlertBar';
 
 function App() {
   return (
+    <>
     <BrowserRouter>
       <Routes>
 
@@ -29,6 +31,8 @@ function App() {
 
       </Routes>
     </BrowserRouter>
+    <AlertBar />
+    </>
   );
 }
 

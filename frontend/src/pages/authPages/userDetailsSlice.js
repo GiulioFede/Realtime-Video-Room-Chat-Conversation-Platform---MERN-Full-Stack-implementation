@@ -23,36 +23,37 @@ const userDetailsSlice = createSlice({
         .addCase(registerNewUserAPI.pending, (state, action)=>{
             console.log("in attesa...");
             state.status = "loading";
+            state.error = null;
         })
         .addCase(registerNewUserAPI.fulfilled, (state, action)=>{
             console.log("Successo!");
             console.log(action.payload);
             state.userDetails = action.payload.data.userDetails;
             state.status = "succeeded";
-
             //memorizzo in maniera persistente dati sul browser come coppia valore
             localStorage.setItem("user", JSON.stringify(action.payload.data.userDetails));
             
         })
         .addCase(registerNewUserAPI.rejected, (state, action)=>{
             console.log("Qualcosa è andato storto! " + action.error.message);
-            console.log(action);
+            console.log(action.payload);
             state.status = "failed";
+            state.error = action.payload;
         })
     },
-    //REDUCER PER REGISTRAZIONE
+    //REDUCER PER LOGIN
     extraReducers(builder){
         builder
         .addCase(loginUserAPI.pending, (state, action)=>{
             console.log("in attesa...");
             state.status = "loading";
+            state.status = null;
         })
         .addCase(loginUserAPI.fulfilled, (state, action)=>{
             console.log("Successo login!");
             console.log(action.payload);
             state.userDetails = action.payload.data.userDetails;
             state.status = "succeeded";
-
             //memorizzo in maniera persistente dati sul browser come coppia valore
             localStorage.setItem("user", JSON.stringify(action.payload.data.userDetails));
             
@@ -61,6 +62,7 @@ const userDetailsSlice = createSlice({
             console.log("Qualcosa è andato storto col login! " + action.error.message);
             console.log(action);
             state.status = "failed";
+            state.error = action.payload;
         })
     }
 })

@@ -8,6 +8,7 @@ import {useNavigate} from "react-router-dom";
 import { validateRegisterForm } from "./utils/validator";
 import { registerNewUserAPI } from "../userDetailsSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { open } from "../../components/slices/AlertBarSlice";
 
 
 const RegisterPage = () => {
@@ -22,12 +23,18 @@ const RegisterPage = () => {
     const [isFormValid, setIsFormValid] = useState(false);
 
     const status = useSelector(state => state.userDetails.status);
+    const error = useSelector(state => state.userDetails.error);
 
     useEffect( ()=>{
         console.log("Lo stato è cambiato: ", status);
         if (status=="succeeded"){
                 //redirect alla pagina di dashboard
                 navigate('/dashboard');
+        }
+
+        if (status=="failed"){
+            console.log("apri box di alert");
+            dispatch(open(error));
         }
 
     },[status])
