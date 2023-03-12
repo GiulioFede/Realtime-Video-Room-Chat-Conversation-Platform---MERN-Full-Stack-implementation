@@ -38,7 +38,7 @@ const userDetailsSlice = createSlice({
             console.log("Qualcosa è andato storto! " + action.error.message);
             console.log(action.payload);
             state.status = "failed";
-            state.error = action.payload;
+            state.error = action.payload.data;
         })
     },
     //REDUCER PER LOGIN
@@ -62,7 +62,7 @@ const userDetailsSlice = createSlice({
             console.log("Qualcosa è andato storto col login! " + action.error.message);
             console.log(action);
             state.status = "failed";
-            state.error = action.payload;
+            state.error = action.payload.data;
         })
     }
 })
@@ -75,6 +75,20 @@ const Server = axios.create({
     timeout: 2000 //attendo al massimo 2 secondi prima di dire al client che ci sono problemi nel contattare il server
 })
 
+Server.interceptors.request.use((config) =>{
+
+    const userDetails = localStorage.getItem("user");
+
+    if (userDetails){
+        const token = JSON.parse(userDetails).token;
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
 
 
 export const registerNewUserAPI = createAsyncThunk("/api/auth/register", async(data, thunkAPI) => {
@@ -86,7 +100,7 @@ export const registerNewUserAPI = createAsyncThunk("/api/auth/register", async(d
         console.log("RISPOSTA: "+ response);
         return response;
     }catch(e){
-        throw  thunkAPI.rejectWithValue(e.response.data); //messaggio dal server
+        throw  thunkAPI.rejectWithValue(e.response); //messaggio dal server
     }
 
 })
@@ -101,11 +115,29 @@ export const loginUserAPI = createAsyncThunk("/api/auth/register", async(data, t
         console.log("RISPOSTA: "+ response);
         return response;
     }catch(e){
-        throw  thunkAPI.rejectWithValue(e.response.data); //messaggio dal server
+        throw  thunkAPI.rejectWithValue(e.response); //messaggio dal server
     }
 
 })
 
+
+const isJWTvalid = (response)=>{
+
+    const status = response.status;
+    console.log("isJWTValid status ", status);
+    if (status === 401 || status === 403 ) {
+
+        //logout
+        //logout();
+    }
+}
+
+const logout = ()=>{
+    //pulisco lo storage del client
+    localStorage.clear();
+    //ricarica il client 
+    window.location.pathname = "/login";
+}
 
 
 
