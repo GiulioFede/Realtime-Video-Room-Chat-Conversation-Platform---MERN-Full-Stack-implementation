@@ -6,10 +6,14 @@ import RedirectInfo from "../../components/RedirectInfo";
 import AuthBox from "../components/BoxAuth";
 import {useNavigate} from "react-router-dom";
 import { validateRegisterForm } from "./utils/validator";
+import { registerNewUserAPI } from "../userDetailsSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const RegisterPage = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
@@ -17,12 +21,25 @@ const RegisterPage = () => {
 
     const [isFormValid, setIsFormValid] = useState(false);
 
+    const status = useSelector(state => state.userDetails.status);
+
+    useEffect( ()=>{
+        console.log("Lo stato è cambiato: ", status);
+        if (status=="succeeded"){
+                //redirect alla pagina di dashboard
+                navigate('/dashboard');
+        }
+
+    },[status])
+
     useEffect( ()=> {
         setIsFormValid(validateRegisterForm({email, password, username}))
     },[email, password, username, setIsFormValid])
 
     const handleSignInClick = () => {
         console.log("sign in" + isFormValid);
+        dispatch(registerNewUserAPI({email, password, username}));
+        console.log("inviato");
     }
 
     const handlePushToLoginPage = () => {
@@ -86,7 +103,10 @@ const RegisterPage = () => {
                 text="Hai già un account? "
                 redirectText="Vai al log in"
                 redirectHandler={handlePushToLoginPage}
-            />             
+            />
+            {status=="loading" && 
+                <p>loading...</p>
+            }             
 
         </AuthBox>
     )

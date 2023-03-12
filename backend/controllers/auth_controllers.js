@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const handlerRegistration = async (req, res) => {
 
     try {
-
+        console.log("Nuova richiesta di registrazione");
         //prelevo quanto l'utente vuole inserire
         const {username, email, password} = req.body;
 
@@ -35,7 +35,7 @@ const handlerRegistration = async (req, res) => {
             //restituire il token
             const token = jwt.sign(
                 {
-                    userId: userDocument._id,
+                    userId: newUser._id,
                     email
                 },
                 process.env.TOKEN_KEY,
@@ -67,7 +67,7 @@ const handlerRegistration = async (req, res) => {
 const handlerLogin = async (req, res) => {
     
     try{
-
+        console.log("nuova richiesta di login");
         const {email, password} = req.body;
 
         //creo una istanza dello schema per la collezione Users

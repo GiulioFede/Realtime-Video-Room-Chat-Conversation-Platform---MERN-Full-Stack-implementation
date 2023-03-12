@@ -7,10 +7,15 @@ import BoxHeaderAuth from "../components/BoxHeaderAuth";
 import {useNavigate} from "react-router-dom";
 import { Tooltip } from "@mui/material";
 import { validateLoginForm } from "./utils/validator";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUserAPI } from "../userDetailsSlice";
+
 
 const LoginPage = () => {
 
+
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     //contiene il valore di email che l'utente ogni volta che digita inserisce
     const [email, setEmail] = useState(''); 
@@ -19,19 +24,30 @@ const LoginPage = () => {
 
     const [isFormValid, setIsFormValid] = useState(false);
 
+    const status = useSelector(state => state.userDetails.status);
+
     useEffect(()=>{
 
         //quando cambia l'email e/o la password inserita li validiamo
         setIsFormValid( validateLoginForm({email, password}));
 
     },[email, password, setIsFormValid])
+
+    useEffect( ()=>{
+        console.log("Lo stato è cambiato: ", status);
+        if (status=="succeeded"){
+                //redirect alla pagina di dashboard
+                navigate('/dashboard');
+        }
+
+    },[status])
     
     const handleLogInClick = () => {
         console.log("log in" + isFormValid);
+        dispatch(loginUserAPI({email, password}));
     }
 
     const handlePushToRegisterPage = () => {
-        //redirect alla pagina di registrazione
         navigate('/register');
     }
 
