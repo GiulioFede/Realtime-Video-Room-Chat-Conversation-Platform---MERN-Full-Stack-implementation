@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const authRoutes = require("./routes/auth_routes");
+const { Server } = require("socket.io");
 
 //utilizza la porta fornita dall'ambiente di deployment (PORT) oppure quella definita da me in locale (API_PORT)
 const PORT = process.env.PORT || process.env.API_PORT;
@@ -17,6 +18,17 @@ app.use(express.json());
 app.use(cors())
 
 const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
+
+io.on("connection", (socket) =>{
+    console.log("User connected: " + socket.id);
+})
 
 //registro le routes per l'autenticazione (registrazione e login)
 app.use("/api/auth", authRoutes);

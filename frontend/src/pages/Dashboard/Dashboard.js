@@ -1,6 +1,7 @@
 
 import React, { useEffect } from "react"
 import { useDispatch } from "react-redux";
+import connect_to_socket_io_server from "../../realtime_communications/socketConnection";
 import { logout, setUserDetails } from "../authPages/userDetailsSlice";
 import AppBar from "./AppBar/AppBar";
 import FriendsSideBar from "./FriendsSideBar/FriendsSideBar";
@@ -20,6 +21,8 @@ const Dashboard = (props) => {
             logout();
         }else {
             dispatch(setUserDetails(userDetails));
+            //mi connetto al socket.io server
+            connect_to_socket_io_server();
         }
 
 
