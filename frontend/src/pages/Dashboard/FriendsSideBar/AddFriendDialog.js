@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { validateEmail } from "../../authPages/LoginPage/utils/validator";
-import { Dialog, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
 import InputField from "../../components/InputField";
+import PrimaryButton from "../../components/PrimaryButton";
 
 const AddFriendDialog = ({
     isDialogOpen,
@@ -47,7 +48,18 @@ const AddFriendDialog = ({
                             placeholder = "inserisci un indirizzo email"
                         />
                 </DialogContent>
-
+                <DialogActions>
+                    <PrimaryButton 
+                        onClick={handleSendInvitation}  
+                        disabled={!isFormValid} 
+                        label="Invia"
+                        additionalStyles = {{
+                            marginLeft: "15px",
+                            marginRight: "15px",
+                            marginBottom: "10px"
+                        }} 
+                    />
+                </DialogActions>
             </Dialog>
         </>
     )

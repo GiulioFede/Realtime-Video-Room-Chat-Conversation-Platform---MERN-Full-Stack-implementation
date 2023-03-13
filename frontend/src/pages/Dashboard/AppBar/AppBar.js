@@ -1,10 +1,11 @@
 import React from 'react'
+import DropDownMenu from './DropDownMenu';
 
 
 const AppBar = () => {
     return (
         <div style={divStyle}>
-
+            <DropDownMenu />
         </div>
     )
 }

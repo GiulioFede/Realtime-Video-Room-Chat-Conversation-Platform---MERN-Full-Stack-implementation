@@ -30,6 +30,7 @@ const userDetailsSlice = createSlice({
             console.log(action.payload);
             state.userDetails = action.payload.data.userDetails;
             state.status = "succeeded";
+            state.error = null;
             //memorizzo in maniera persistente dati sul browser come coppia valore
             localStorage.setItem("user", JSON.stringify(action.payload.data.userDetails));
             
@@ -54,6 +55,7 @@ const userDetailsSlice = createSlice({
             console.log(action.payload);
             state.userDetails = action.payload.data.userDetails;
             state.status = "succeeded";
+            state.error = null;
             //memorizzo in maniera persistente dati sul browser come coppia valore
             localStorage.setItem("user", JSON.stringify(action.payload.data.userDetails));
             
@@ -62,7 +64,8 @@ const userDetailsSlice = createSlice({
             console.log("Qualcosa è andato storto col login! " + action.error.message);
             console.log(action);
             state.status = "failed";
-            state.error = action.payload.data;
+            if (action.payload != undefined)
+                state.error = action.payload.data;
         })
     }
 })
@@ -132,7 +135,7 @@ const isJWTvalid = (response)=>{
     }
 }
 
-const logout = ()=>{
+export const logout = ()=>{
     //pulisco lo storage del client
     localStorage.clear();
     //ricarica il client 
