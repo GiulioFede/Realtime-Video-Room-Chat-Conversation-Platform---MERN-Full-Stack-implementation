@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const authRoutes = require("./routes/auth_routes");
 const { Server } = require("socket.io");
+const { verifyTokenSocket } = require("./middleware/auth_middleware");
+const { addNewUserToDB, removeUserInDB } = require("./server_store/serverStore");
 
 //utilizza la porta fornita dall'ambiente di deployment (PORT) oppure quella definita da me in locale (API_PORT)
 const PORT = process.env.PORT || process.env.API_PORT;
@@ -26,8 +28,25 @@ const io = new Server(server, {
     }
 });
 
+//middleware function per testare ogni uso della socket verificando il token
+io.use((socket,next)=>{
+    //se il JWT è valido allora continua altrimenti invia NOT_AUTHORIZED
+    verifyTokenSocket(socket,next);
+})
+
+
 io.on("connection", (socket) =>{
+    console.log(socket.user);
     console.log("User connected: " + socket.id);
+
+    //aggiungo l'utente al db
+    addNewUserToDB(socket.id,socket.user.userId);
+
+    //registro per questo utente anche l'evento di disconnessione
+    socket.on("disconnect", ()=>{
+        console.log("utente disconnesso");
+        removeUserInDB(socket.id);
+    })
 })
 
 //registro le routes per l'autenticazione (registrazione e login)

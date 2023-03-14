@@ -14,7 +14,8 @@ const userDetailsSlice = createSlice({
     initialState,
     reducers: {
         setUserDetails(state,action){
-            state = action.payload;
+            const userDetails_json = JSON.parse(action.payload);
+            state.userDetails = {email: userDetails_json.email, username: userDetails_json.username, token: userDetails_json.token}
         }
     },
     //REDUCER PER REGISTRAZIONE

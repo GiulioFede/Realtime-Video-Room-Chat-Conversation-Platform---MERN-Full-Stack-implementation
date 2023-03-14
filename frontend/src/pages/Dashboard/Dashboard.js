@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 import { useDispatch } from "react-redux";
 import connect_to_socket_io_server from "../../realtime_communications/socketConnection";
 import { logout, setUserDetails } from "../authPages/userDetailsSlice";
@@ -12,19 +12,26 @@ const Dashboard = (props) => {
 
     const dispatch = useDispatch();
 
+    //variabile utile a essere sicuri di eseguire operazioni una volta sola (anche se il componente viene rimontato)
+    const isFirstTime = useRef(true);
+
     useEffect(()=>{
 
-        //leggo il local storage del browser
-        const userDetails = localStorage.getItem("user");
+        if (isFirstTime.current == true){
+            //leggo il local storage del browser
+            const userDetails = localStorage.getItem("user");
 
-        if(!userDetails){
-            logout();
-        }else {
-            dispatch(setUserDetails(userDetails));
-            //mi connetto al socket.io server
-            connect_to_socket_io_server();
+            if(!userDetails){
+                logout();
+            }else {
+                dispatch(setUserDetails(userDetails));
+                //mi connetto al socket.io server
+                console.log("mi connetto al socket server..."+userDetails);
+                connect_to_socket_io_server(JSON.parse(userDetails));
+            }
+
+            isFirstTime.current = false;
         }
-
 
     },[])
 

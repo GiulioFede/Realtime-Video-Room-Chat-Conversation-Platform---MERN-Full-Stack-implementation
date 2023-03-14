@@ -23,11 +23,37 @@ const verifyToken = (req, res, next) => {
         return next();
 
     }catch(err){
-        return res.status(401).send("Token non valido.");
         console.log(err);
+        return res.status(401).send("Token non valido.");
+        
     }
 }
 
+
+//stessa funzione ma la useremo quando il client si connetterà al socket server
+const verifyTokenSocket = (socket, next) => {
+
+    console.log("verifico token socket: ");
+
+    try {
+        const token = socket.handshake.auth.token;
+        console.log(process.env.TOKEN_KEY)
+        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+        socket.user = decoded;
+        console.log("verifica avvenuta con successo");
+    }catch(err){
+        //qui dentro ci finiamo per qualsiasi errore MA in particolare se il token non è valido
+        const socketError = new Error("NOT_AUTHORIZED");
+        console.log("verifica fallita: "+ err);
+        return next(socketError);
+    }
+
+    //se invece va tutto bene...
+    console.log("procedo");
+    next();
+}
+
 module.exports = {
-    verifyToken
+    verifyToken,
+    verifyTokenSocket
 }
