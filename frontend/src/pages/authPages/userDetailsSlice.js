@@ -125,14 +125,13 @@ export const loginUserAPI = createAsyncThunk("/api/auth/register", async(data, t
 })
 
 
-const isJWTvalid = (response)=>{
+export const checkJWTvalidity = (response)=>{
 
     const status = response.status;
     console.log("isJWTValid status ", status);
     if (status === 401 || status === 403 ) {
-
         //logout
-        //logout();
+        logout();
     }
 }
 

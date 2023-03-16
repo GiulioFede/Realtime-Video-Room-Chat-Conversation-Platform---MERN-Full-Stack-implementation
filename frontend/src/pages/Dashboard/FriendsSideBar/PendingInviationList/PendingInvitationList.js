@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useEffect } from "react"
+import { useSelector } from "react-redux"
 import PendingInvitationListItem from "./PendingInvitationListItem"
 
 const INVITATIONS = [
@@ -20,9 +21,11 @@ const INVITATIONS = [
 
 const PendingInvitationList = () => {
 
+   const pending_invitations = useSelector(state => state.friends.pendingFriendsInvitations);
+  console.log(pending_invitations);
     return (
       <div style={custom_style}>
-          {INVITATIONS.map(invitation =>(
+          {pending_invitations.length>0 && pending_invitations.map(invitation =>(
             <PendingInvitationListItem
             key={invitation._id}
             id={invitation._id}

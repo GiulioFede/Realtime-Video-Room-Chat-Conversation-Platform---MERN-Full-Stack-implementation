@@ -6,7 +6,9 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth_routes");
 const { Server } = require("socket.io");
 const { verifyTokenSocket } = require("./middleware/auth_middleware");
-const { addNewUserToDB, removeUserInDB } = require("./server_store/serverStore");
+const { addNewUserToDB, removeUserInDB, setSocketServerInstance } = require("./server_store/serverStore");
+const friendsInvitationRoutes = require("./routes/friend_invitation_routes");
+const { updateFriendsPendingInvitations } = require("./socket_handlers/socket_handlers");
 
 //utilizza la porta fornita dall'ambiente di deployment (PORT) oppure quella definita da me in locale (API_PORT)
 const PORT = process.env.PORT || process.env.API_PORT;
@@ -28,6 +30,8 @@ const io = new Server(server, {
     }
 });
 
+setSocketServerInstance(io);
+
 //middleware function per testare ogni uso della socket verificando il token
 io.use((socket,next)=>{
     //se il JWT è valido allora continua altrimenti invia NOT_AUTHORIZED
@@ -46,11 +50,17 @@ io.on("connection", (socket) =>{
     socket.on("disconnect", ()=>{
         console.log("utente disconnesso");
         removeUserInDB(socket.id);
-    })
+    });
+
+    //lo notifico di eventuali richieste di amicizia
+    updateFriendsPendingInvitations(socket.user.userId);
 })
 
 //registro le routes per l'autenticazione (registrazione e login)
 app.use("/api/auth", authRoutes);
+
+//registro le routes per la gestione degli amici 
+app.use("/api/friend-invitation", friendsInvitationRoutes);
 
 //prima di accettare richieste dagli utenti (quindi attivare il server), tentiamo di connetterci al cluster
 mongoose.connect(process.env.MONGO_URI)

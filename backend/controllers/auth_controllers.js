@@ -1,9 +1,8 @@
 
-const {registerSchema} = require("../models/auth_models");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-
+const newRegistration = require("../models/auth_models");
 //controller che gestisce la registrazione
 const handlerRegistration = async (req, res) => {
 
@@ -11,9 +10,6 @@ const handlerRegistration = async (req, res) => {
         console.log("Nuova richiesta di registrazione");
         //prelevo quanto l'utente vuole inserire
         const {username, email, password} = req.body;
-
-        //creo una istanza dello schema per la collezione Users
-        const newRegistration = mongoose.model('Users', registerSchema); // Users sarà il nome della collezione
 
         //faccio una query diretta per controllare l'esistenza della stessa mail
         const userExists = await newRegistration.exists({ email: email.toLowerCase() });
@@ -71,7 +67,7 @@ const handlerLogin = async (req, res) => {
         const {email, password} = req.body;
 
         //creo una istanza dello schema per la collezione Users
-        const userModel = mongoose.model('Users', registerSchema); // Users sarà il nome della collezione
+        const userModel = newRegistration;
 
         const userDocument = await userModel.findOne({ email: email.toLowerCase()});
 

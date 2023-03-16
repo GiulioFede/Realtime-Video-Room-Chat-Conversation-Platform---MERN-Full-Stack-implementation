@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
 
+    console.log("verifico token");
+
     //prelevo il token in una delle 3 possibili locazioni della request
     let token = req.body.token || req.query.token || req.headers["authorization"];
 
@@ -23,7 +25,7 @@ const verifyToken = (req, res, next) => {
         return next();
 
     }catch(err){
-        console.log(err);
+        console.log("Errore nella verifyToken: "+err);
         return res.status(401).send("Token non valido.");
         
     }

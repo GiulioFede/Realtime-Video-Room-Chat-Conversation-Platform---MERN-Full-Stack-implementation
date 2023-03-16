@@ -2,6 +2,16 @@
 //qui memorizzerò in RAM il mio key-value database
 const connectedUsersDB = new Map();
 
+let io = null;
+
+const setSocketServerInstance = (ioInstance) => {
+    io = ioInstance;
+}
+
+const getSocketServerInstance = () => {
+    return io;
+}
+
 const addNewUserToDB = (socketID, userID) =>{
 
     console.log("aggiungo "+socketID +" con userid "+userID);
@@ -19,7 +29,22 @@ const removeUserInDB = (socketID) => {
     console.log(connectedUsersDB);
 }
 
+const getActiveConnections = (userId) =>{
+    const activeConnections = [];
+
+    connectedUsersDB.forEach(function(value,key) {
+        if(value.userId === userId){
+            activeConnections.push(key);
+        }
+    });
+
+    return activeConnections;
+}
+
 module.exports = {
     addNewUserToDB,
-    removeUserInDB
+    removeUserInDB,
+    getActiveConnections,
+    setSocketServerInstance,
+    getSocketServerInstance
 }
