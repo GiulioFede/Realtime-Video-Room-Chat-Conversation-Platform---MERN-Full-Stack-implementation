@@ -1,6 +1,6 @@
 
 import { Typography } from "@mui/material";
-import React from "react"
+import React, { useEffect } from "react"
 import { useSelector } from "react-redux";
 import FriendsListItem from "./FriendsListItem";
 
@@ -30,7 +30,10 @@ const FRIENDS = [
 const FriendsList = ({title}) => {
 
    const friends = useSelector(state => state.friends.friends);
-
+   useEffect(()=>{
+      console.log("aggiornamento amici");
+      console.log(friends);
+   },[friends])
     return (
       <div style={custom_style}>
        

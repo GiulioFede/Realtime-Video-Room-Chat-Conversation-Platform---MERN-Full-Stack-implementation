@@ -22,7 +22,7 @@ const INVITATIONS = [
 const PendingInvitationList = () => {
 
    const pending_invitations = useSelector(state => state.friends.pendingFriendsInvitations);
-  console.log(pending_invitations);
+  
     return (
       <div style={custom_style}>
           {pending_invitations.length>0 && pending_invitations.map(invitation =>(

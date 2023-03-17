@@ -110,6 +110,8 @@ const handleAcceptFriendInvitation = async (req, res) => {
 
         //aggiorno UI di pending solo per chi ha ricevuto la richiesta
         updateFriendsPendingInvitations(receiverId.toString());
+
+        //emetto per chi ha accettato
         console.log("fine");
         return res.status(200).send("La richiesta di amicizia è stata accettata.");
 

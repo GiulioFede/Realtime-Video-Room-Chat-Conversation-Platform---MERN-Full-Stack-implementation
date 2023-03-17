@@ -6,7 +6,6 @@ const initialState =
     {
         friends: [],
         pendingFriendsInvitations: [],
-        onlineUsers: [],
         status: "idle",
         error: null
     }
@@ -24,8 +23,17 @@ const friendsSlice = createSlice({
         addPendingFriendsInvitation(state,action){
             state.pendingFriendsInvitations.push(action.payload)
         },
-        setOnlineUsers(state,action){
-            state.onlineUsers = action.payload;
+        setOnlineFriends(state,action){
+            console.log("verifico che l'utente online sia mio amico:"+action.payload);
+            const index = state.friends.findIndex((f => f.id == action.payload));
+            if(index!=-1)
+                state.friends[index].isOnline = true;
+        },
+        setDisconnectFriends(state,action){
+            console.log("verifico che l'utente disconnesso sia mio amico:"+action.payload);
+            const index = state.friends.findIndex((f => f.id == action.payload));
+            if(index!=-1)
+                state.friends[index].isOnline = false;
         }
     },
     //REDUCER PER FRIEND INVITATION
@@ -226,6 +234,6 @@ export const rejectFriendInvitation = createAsyncThunk("/api/friends/rejectInvit
 });
 
 
-export const {setFriends,setPendingFriendsInvitation,setOnlineUsers,addPendingFriendsInvitation} = friendsSlice.actions;
+export const {setFriends,setPendingFriendsInvitation,setOnlineFriends,setDisconnectFriends,addPendingFriendsInvitation} = friendsSlice.actions;
 
 export default friendsSlice.reducer

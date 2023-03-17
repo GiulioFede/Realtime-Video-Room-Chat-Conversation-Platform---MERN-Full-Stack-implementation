@@ -1,7 +1,7 @@
 import io from "socket.io-client"
 import { logout } from "../pages/authPages/userDetailsSlice";
 import { open } from "../pages/components/slices/AlertBarSlice";
-import { addPendingFriendsInvitation, setFriends, setPendingFriendsInvitation } from "../pages/Dashboard/features/friendsSlice";
+import { addPendingFriendsInvitation, setDisconnectFriends, setFriends, setOnlineFriends, setPendingFriendsInvitation } from "../pages/Dashboard/features/friendsSlice";
 
 
 let socket = null;
@@ -50,6 +50,25 @@ const connect_to_socket_io_server = (userDetails, dispatch) =>{
             console.log(friends);
             dispatch(setFriends(friends));
         })
+
+        socket.on("new-online-user", (data) =>{
+            console.log("nuovo utente online");
+            dispatch(setOnlineFriends(data)); //data=id
+        })
+
+        socket.on("new-disconnect-user", (data) =>{
+            console.log("utente disconnesso");
+            dispatch(setDisconnectFriends(data)); //data=id
+        })
+
+        socket.on("init-online-users", (data) =>{
+            console.log("inizializzazione utenti online");
+            const {onlineUsers} = data;
+            console.log(onlineUsers);
+            onlineUsers.forEach(ou => {
+                dispatch(setOnlineFriends(ou.userId));
+            })
+        });
 
 
 }

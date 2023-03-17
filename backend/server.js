@@ -6,7 +6,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth_routes");
 const { Server } = require("socket.io");
 const { verifyTokenSocket } = require("./middleware/auth_middleware");
-const { addNewUserToDB, removeUserInDB, setSocketServerInstance } = require("./server_store/serverStore");
+const { addNewUserToDB, removeUserInDB, setSocketServerInstance, getOnlineUsers } = require("./server_store/serverStore");
 const friendsInvitationRoutes = require("./routes/friend_invitation_routes");
 const { updateFriendsPendingInvitations, updateFriends } = require("./socket_handlers/socket_handlers");
 
@@ -49,6 +49,8 @@ io.on("connection", (socket) =>{
     //registro per questo utente anche l'evento di disconnessione
     socket.on("disconnect", ()=>{
         console.log("utente disconnesso");
+        //avverto tutti che sono disconnesso
+        socket.broadcast.emit("new-disconnect-user", socket.user.userId);
         removeUserInDB(socket.id);
     });
 
@@ -56,7 +58,15 @@ io.on("connection", (socket) =>{
     updateFriendsPendingInvitations(socket.user.userId);
 
     //aggiorno la UI friends
-    updateFriends(socket.user.userId);
+    updateFriends(socket.user.userId).then(()=>{
+        //invio a tutti la notifica di un nuovo utente
+        socket.broadcast.emit("new-online-user", socket.user.userId);
+
+        //essendo la prima volta dovrò mandare tutta la lista degli utenti online (OTTIMIZZA!)
+        const onlineUsers = getOnlineUsers();
+        io.emit("init-online-users", {onlineUsers});
+    })
+   
 })
 
 //registro le routes per l'autenticazione (registrazione e login)
