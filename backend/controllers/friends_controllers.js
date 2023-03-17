@@ -1,6 +1,6 @@
-const { default: mongoose } = require("mongoose");
+const { default: mongoose, startSession } = require("mongoose");
 const newRegistration = require("../models/auth_models");
-const { updateFriendsPendingInvitations } = require("../socket_handlers/socket_handlers");
+const { updateFriendsPendingInvitations, updateFriends } = require("../socket_handlers/socket_handlers");
 const invitation = require("../models/friend_invitation");
 
 const handleSendFriendInvitation = async (req, res) => {
@@ -66,6 +66,79 @@ const handleSendFriendInvitation = async (req, res) => {
 }
 
 
+const handleAcceptFriendInvitation = async (req, res) => {
+    console.log("gestisco la richiesta di accettazione amicizia:");
+
+    try{
+
+        const {id} = req.body;
+
+        const invitation_doc = await invitation.findById(id);
+
+        //che se esiste
+        if(!invitation_doc){
+            return res.status(401).send("L'invito sembra non esistere più.");
+        }
+
+        const {senderId, receiverId} = invitation_doc;
+
+
+        //aggiungo l'amicizia a entrambi
+        const senderUser = await newRegistration.findById(senderId);
+        senderUser.friends = [...senderUser.friends, receiverId];
+
+        const receiverUser = await newRegistration.findById(receiverId);
+        receiverUser.friends = [...receiverUser.friends, senderId];
+
+        //per consistenza, usiamo le transaction
+        const session = await startSession();
+
+        session.startTransaction();
+        console.log(senderId+"   "+receiverId);
+        //li aggiorno
+        await senderUser.save({session});
+        await receiverUser.save({session});
+
+        //elimino invito
+        await invitation.findByIdAndDelete(id,{session});
+
+        session.commitTransaction();
+
+        //Aggiorno UI friends per entrambi
+        updateFriends(senderId.toString());
+        updateFriends(receiverId.toString());        
+
+        //aggiorno UI di pending solo per chi ha ricevuto la richiesta
+        updateFriendsPendingInvitations(receiverId.toString());
+        console.log("fine");
+        return res.status(200).send("La richiesta di amicizia è stata accettata.");
+
+    }catch(err){
+        console.log(err);
+        return res.status(500).send("Si è verificato un errore. Riprova più tardi.");
+    }
+}
+
+const handleRejectFriendInvitation = async (req, res) => {
+    console.log("gestisco la richiesta di rifiuto amicizia:");
+    try{
+        const {id} = req.body;
+        const {userId} = req.user;
+
+        //eliminiamola l'invito
+        await invitation.findByIdAndDelete(id);
+
+        updateFriendsPendingInvitations(userId);
+
+        return res.status(200).send("Invito rimosso con successo");
+    }catch(e){
+
+    }return res.status(500).send("Non è stato possibile rimuovere l'invito. Si prega di riprovare più tardi.");
+}
+
+
 module.exports = {
-    handleSendFriendInvitation
+    handleSendFriendInvitation,
+    handleAcceptFriendInvitation,
+    handleRejectFriendInvitation
 };

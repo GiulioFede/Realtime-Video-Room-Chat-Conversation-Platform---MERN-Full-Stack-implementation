@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const { verifyTokenSocket } = require("./middleware/auth_middleware");
 const { addNewUserToDB, removeUserInDB, setSocketServerInstance } = require("./server_store/serverStore");
 const friendsInvitationRoutes = require("./routes/friend_invitation_routes");
-const { updateFriendsPendingInvitations } = require("./socket_handlers/socket_handlers");
+const { updateFriendsPendingInvitations, updateFriends } = require("./socket_handlers/socket_handlers");
 
 //utilizza la porta fornita dall'ambiente di deployment (PORT) oppure quella definita da me in locale (API_PORT)
 const PORT = process.env.PORT || process.env.API_PORT;
@@ -54,6 +54,9 @@ io.on("connection", (socket) =>{
 
     //lo notifico di eventuali richieste di amicizia
     updateFriendsPendingInvitations(socket.user.userId);
+
+    //aggiorno la UI friends
+    updateFriends(socket.user.userId);
 })
 
 //registro le routes per l'autenticazione (registrazione e login)

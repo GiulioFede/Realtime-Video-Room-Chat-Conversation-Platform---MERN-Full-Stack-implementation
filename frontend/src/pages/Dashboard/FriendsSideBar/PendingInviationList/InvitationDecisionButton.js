@@ -4,7 +4,7 @@ import { Box, IconButton } from "@mui/material";
 import React from "react"
 
 
-const InvitationDecisionButton = ({disabled, acceptInvitationHandler}) => {
+const InvitationDecisionButton = ({disabled, acceptInvitationHandler,rejectInvitationHandler}) => {
 
     return (
       <Box
@@ -22,7 +22,7 @@ const InvitationDecisionButton = ({disabled, acceptInvitationHandler}) => {
             <IconButton
                 style={{color: "white"}}
                 disabled={disabled}
-                onClick={acceptInvitationHandler}
+                onClick={rejectInvitationHandler}
             >
                 <ClearRounded />
             </IconButton>

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import connect_to_socket_io_server from "../../realtime_communications/socketConnection";
 import { logout, setUserDetails } from "../authPages/userDetailsSlice";
 import AppBar from "./AppBar/AppBar";
+import { setFriends } from "./features/friendsSlice";
 import FriendsSideBar from "./FriendsSideBar/FriendsSideBar";
 import Messenger from "./Messenger/Messenger";
 import SideBar from "./SideBar/SideBar";

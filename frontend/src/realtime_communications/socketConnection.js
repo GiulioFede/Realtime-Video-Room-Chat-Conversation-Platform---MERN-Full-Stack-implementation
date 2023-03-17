@@ -1,7 +1,7 @@
 import io from "socket.io-client"
 import { logout } from "../pages/authPages/userDetailsSlice";
 import { open } from "../pages/components/slices/AlertBarSlice";
-import { addPendingFriendsInvitation, setPendingFriendsInvitation } from "../pages/Dashboard/features/friendsSlice";
+import { addPendingFriendsInvitation, setFriends, setPendingFriendsInvitation } from "../pages/Dashboard/features/friendsSlice";
 
 
 let socket = null;
@@ -31,12 +31,24 @@ const connect_to_socket_io_server = (userDetails, dispatch) =>{
             const {pendingInvitations} = data;
             console.log("evento friend invitations:");
             console.log(pendingInvitations);
+
+            /*
             pendingInvitations.forEach(pi =>{
                 dispatch(addPendingFriendsInvitation({
                     _id: pi._id,
                     senderId: pi.senderId
                 }));
             })
+            */
+
+            dispatch(setPendingFriendsInvitation(pendingInvitations))
+        });
+
+        socket.on("friends-list", (data) =>{
+            console.log("evento aggiornamento amici");
+            const {friends} = data;
+            console.log(friends);
+            dispatch(setFriends(friends));
         })
 
 

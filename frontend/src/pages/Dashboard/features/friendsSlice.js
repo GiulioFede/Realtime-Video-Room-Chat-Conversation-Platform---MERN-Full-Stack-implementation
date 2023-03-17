@@ -44,6 +44,7 @@ const friendsSlice = createSlice({
             
         })
         .addCase(sendFriendInvitationAPI.rejected, (state, action)=>{
+            console.log("ERRORE");
             console.log("Qualcosa è andato storto! " + action.error.message + "  ERRORE: "+action.payload.status);
             console.log(action.payload);
             state.status = "failed";
@@ -52,11 +53,6 @@ const friendsSlice = createSlice({
             //controllo se l'errore è stato del JWT, in tal caso effettuo il logout()
             checkJWTvalidity(action.payload);
         })
-    },
-
-    //ACCEPT INVITATION
-     extraReducers(builder){
-        builder
         .addCase(acceptFriendInvitation.pending, (state, action)=>{
             console.log("in attesa...");
             state.status = "loading";
@@ -73,7 +69,56 @@ const friendsSlice = createSlice({
             console.log("Qualcosa è andato storto! " + action.error.message + "  ERRORE: "+action.payload.status);
             console.log(action.payload);
             state.status = "failed";
+            //state.error = action.payload.data;
+
+            //controllo se l'errore è stato del JWT, in tal caso effettuo il logout()
+            checkJWTvalidity(action.payload);
+        })
+        .addCase(rejectFriendInvitation.pending, (state, action)=>{
+            console.log("in attesa...");
+            state.status = "loading";
+            state.error = null;
+        })
+        .addCase(rejectFriendInvitation.fulfilled, (state, action)=>{
+            console.log("Successo!");
+            console.log(action.payload);
+            state.status = "succeeded";
+            state.error = null;
+            
+        })
+        .addCase(rejectFriendInvitation.rejected, (state, action)=>{
+            console.log("Qualcosa è andato storto! " + action.error.message + "  ERRORE: "+action.payload.status);
+            console.log(action.payload);
+            state.status = "failed";
             state.error = action.payload.data;
+
+            //controllo se l'errore è stato del JWT, in tal caso effettuo il logout()
+            checkJWTvalidity(action.payload);
+
+            throw new Error( action.payload.data);
+        })
+    },
+/*
+    //ACCEPT INVITATION
+     extraReducers(builder2){
+        builder2
+        .addCase(acceptFriendInvitation.pending, (state, action)=>{
+            console.log("in attesa...");
+            state.status = "loading";
+            state.error = null;
+        })
+        .addCase(acceptFriendInvitation.fulfilled, (state, action)=>{
+            console.log("Successo!");
+            console.log(action.payload);
+            state.status = "succeeded";
+            state.error = null;
+            
+        })
+        .addCase(acceptFriendInvitation.rejected, (state, action)=>{
+            console.log("Qualcosa è andato storto! " + action.error.message + "  ERRORE: "+action.payload.status);
+            console.log(action.payload);
+            state.status = "failed";
+            //state.error = action.payload.data;
 
             //controllo se l'errore è stato del JWT, in tal caso effettuo il logout()
             checkJWTvalidity(action.payload);
@@ -81,21 +126,21 @@ const friendsSlice = createSlice({
     },
 
      //REJECT INVITATION
-     extraReducers(builder){
-        builder
-        .addCase(acceptFriendInvitation.pending, (state, action)=>{
+     extraReducers(builder3){
+        builder3
+        .addCase(rejectFriendInvitation.pending, (state, action)=>{
             console.log("in attesa...");
             state.status = "loading";
             state.error = null;
         })
-        .addCase(acceptFriendInvitation.fulfilled, (state, action)=>{
+        .addCase(rejectFriendInvitation.fulfilled, (state, action)=>{
             console.log("Successo!");
             console.log(action.payload);
             state.status = "succeeded";
             state.error = null;
             
         })
-        .addCase(acceptFriendInvitation.rejected, (state, action)=>{
+        .addCase(rejectFriendInvitation.rejected, (state, action)=>{
             console.log("Qualcosa è andato storto! " + action.error.message + "  ERRORE: "+action.payload.status);
             console.log(action.payload);
             state.status = "failed";
@@ -104,10 +149,10 @@ const friendsSlice = createSlice({
             //controllo se l'errore è stato del JWT, in tal caso effettuo il logout()
             checkJWTvalidity(action.payload);
 
-            throw new Error("ERROREEEE");
+            throw new Error( action.payload.data);
         })
     },
-    
+    */
 })
 
 
@@ -144,6 +189,8 @@ export const sendFriendInvitationAPI = createAsyncThunk("/api/friends/sendInvita
         console.log("RISPOSTA: "+ response);
         return response;
     }catch(e){
+        console.log("eccezione nell'invio richiesta: ");
+        console.log(e.response);
         throw  thunkAPI.rejectWithValue(e.response); //messaggio dal server
     }
 
@@ -165,7 +212,7 @@ export const acceptFriendInvitation = createAsyncThunk("/api/friends/acceptInvit
 });
 
 export const rejectFriendInvitation = createAsyncThunk("/api/friends/rejectInvitation", async(data, thunkAPI) => {
-    console.log("Accetto richiesta di invito amicizia di " + data);
+    console.log("Rifiuto richiesta di invito amicizia di " + data);
 
     try{
         const response = await Server.post("/api/friend-invitation/reject", data);
